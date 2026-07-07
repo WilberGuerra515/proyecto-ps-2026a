@@ -1,0 +1,20 @@
+# Archivos compilados y ejecutables
+*.o
+*.out
+/bin/*
+/obj/*
+
+# Archivos autogenerados por Qt (Meta-Object Compiler)
+moc_*.cpp
+moc_*.h
+
+# Directorios de datos generados por el uso del programa
+/backups/*
+/downloads/*
+
+# Archivos temporales del sistema operativo y editores
+*~
+*.swp
+.vscode/
+.idea/
+.DS_Store
