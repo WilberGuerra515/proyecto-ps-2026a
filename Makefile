@@ -1,54 +1,77 @@
-# --- Directorios ---
-SRC_CORE = src/core
-SRC_GUI = src/gui
-INC_CORE = include/core
-INC_GUI = include/gui
-OBJ_DIR = obj
-BIN_DIR = bin
-
-# --- Nombre del Ejecutable ---
-TARGET = $(BIN_DIR)/admin_tool
-
-# --- Configuración de Qt5 ---
-QT_CFLAGS = $(shell pkg-config --cflags Qt5Widgets)
-QT_LIBS = $(shell pkg-config --libs Qt5Widgets)
-MOC = moc
-
 # --- Compiladores y Banderas ---
 CC = gcc
+CFLAGS = -Wall -Wextra -g -Iinclude/core
+
+# --- Compiladores y Banderas C++ ---
 CXX = g++
-CFLAGS = -Wall -Wextra -I$(INC_CORE) -g
-CXXFLAGS = -Wall -Wextra -I$(INC_GUI) -I$(INC_CORE) $(QT_CFLAGS) -fPIC -g
+CXXFLAGS = -Wall -Wextra -g -Iinclude/gui -Iinclude/core $(QT_CXXFLAGS)
 
-# --- Archivos Fuente y Objetos (Backend C) ---
-CORE_SRCS = $(wildcard $(SRC_CORE)/*.c)
-CORE_OBJS = $(patsubst $(SRC_CORE)/%.c, $(OBJ_DIR)/%.o, $(CORE_SRCS))
+# --- Configuración de Qt5 ---
+QT_CXXFLAGS = $(shell pkg-config --cflags Qt5Widgets)
+QT_LIBS = $(shell pkg-config --libs Qt5Widgets)
 
-# --- Archivos Fuente y Objetos (Frontend C++ y MOC) ---
-GUI_HEADERS = $(wildcard $(INC_GUI)/*.h)
-MOC_SRCS = $(patsubst $(INC_GUI)/%.h, $(SRC_GUI)/moc_%.cpp, $(GUI_HEADERS))
-GUI_SRCS = $(filter-out $(SRC_GUI)/moc_%.cpp, $(wildcard $(SRC_GUI)/*.cpp))
-GUI_OBJS = $(patsubst $(SRC_GUI)/%.cpp, $(OBJ_DIR)/%.o, $(GUI_SRCS)) \
-           $(patsubst $(SRC_GUI)/moc_%.cpp, $(OBJ_DIR)/moc_%.o, $(MOC_SRCS))
+# --- Herramientas de Qt ---
+MOC = qmake -query QT_INSTALL_BINS/moc
 
-# --- Regla Principal (Construir Ejecutable) ---
+# Si qmake no está disponible directamente, usamos la ruta por defecto:
+MOC = moc
+
+# --- Rutas de Directorios ---
+SRC_CORE_DIR = src/core
+OBJ_DIR = obj
+BIN_DIR = bin
+SRC_GUI_DIR = src/gui
+
+# --- Regla Principal (all) ---
 all: $(TARGET)
 
-# --- Enlazador (Linker) ---
-# Une los objetos de C y C++ junto con las librerías de Qt
-$(TARGET): $(CORE_OBJS) $(GUI_OBJS)
-	$(CXX) -o $@ $^ $(QT_LIBS)
+# Evita conflictos si existen archivos llamados "all" o "clean"
+.PHONY: all clean
 
-# --- Reglas de Construcción de Objetos ---
-$(SRC_GUI)/moc_%.cpp: $(INC_GUI)/%.h
-	$(MOC) $(CXXFLAGS) $< -o $@
+# --- Archivos Fuente y Objetos (Core C) ---
+C_SOURCES = $(wildcard $(SRC_CORE_DIR)/*.c)
+C_OBJECTS = $(patsubst $(SRC_CORE_DIR)/%.c, $(OBJ_DIR)/%.o, $(C_SOURCES))
 
-$(OBJ_DIR)/%.o: $(SRC_CORE)/%.c
+# --- Archivos Fuente y Objetos (GUI C++) ---
+CXX_SOURCES = $(wildcard $(SRC_GUI_DIR)/*.cpp)
+CXX_OBJECTS = $(patsubst $(SRC_GUI_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(CXX_SOURCES))
+
+# --- Regla de compilación para C ---
+$(OBJ_DIR)/%.o: $(SRC_CORE_DIR)/%.c
+	@mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/%.o: $(SRC_GUI)/%.cpp
+# --- Regla de compilación para C++ ---
+$(OBJ_DIR)/%.o: $(SRC_GUI_DIR)/%.cpp
+	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# --- Regla de Limpieza ---
+# --- Archivos MOC Autogenerados ---
+# Buscamos todas las cabeceras en include/gui/
+GUI_HEADERS = $(wildcard include/gui/*.h)
+# Filtramos o mapeamos cuáles generarán un archivo moc_*.cpp en obj/
+MOC_SOURCES = $(patsubst include/gui/%.h, $(OBJ_DIR)/moc_%.cpp, $(GUI_HEADERS))
+MOC_OBJECTS = $(patsubst %.cpp, %.o, $(MOC_SOURCES))
+
+# --- Regla para generar archivos moc_*.cpp desde las cabeceras ---
+$(OBJ_DIR)/moc_%.cpp: include/gui/%.h
+	@mkdir -p $(OBJ_DIR)
+	$(MOC) $< -o $@
+
+# --- Regla para compilar los moc_*.cpp generados ---
+$(OBJ_DIR)/moc_%.o: $(OBJ_DIR)/moc_%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# --- Nombre del ejecutable ---
+TARGET = $(BIN_DIR)/app_control
+
+# --- Regla del Enlazador (Linker) ---
+# Usamos $(CXX) (g++) para enlazar, ya que C++ necesita su biblioteca estándar.
+# $^ representa todos los requisitos (los .o) y $@ el objetivo (TARGET).
+$(TARGET): $(C_OBJECTS) $(CXX_OBJECTS) $(MOC_OBJECTS)
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $^ -o $@ $(QT_LIBS)
+
+# --- Regla de limpieza (clean) ---
 clean:
-	rm -rf $(OBJ_DIR)/*.o $(TARGET) $(SRC_GUI)/moc_*.cpp
+	@rm -rf $(OBJ_DIR)/*.o $(OBJ_DIR)/moc_*.cpp $(BIN_DIR)/app_control
