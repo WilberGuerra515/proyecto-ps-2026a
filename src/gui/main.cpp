@@ -1,5 +1,5 @@
 #include <QApplication>
-#include "MainWindow.h" // Esta clase la crearemos en el siguiente paso
+#include "MainWindow.h"
 
 int main(int argc, char *argv[]) {
     // QApplication inicializa el sistema de ventanas y recursos de Qt
