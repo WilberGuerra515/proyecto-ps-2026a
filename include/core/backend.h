@@ -10,6 +10,9 @@ typedef struct {
     char message[256];
 } CError;
 
+const char* get_backend_message(void);
+int process_data(int a, int b);
+
 #ifdef __cplusplus
 }
 #endif
