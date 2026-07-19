@@ -11,7 +11,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Prueba de conexión con el Backend (C) 
     qDebug() << "Conexión exitosa. Mensaje:" << get_backend_message();
     qDebug() << "Prueba de procesamiento (15 + 25):" << process_data(15, 25);
 }
@@ -19,4 +18,10 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_btnProcess_clicked()
+{
+    int resultado = process_data(100, 50);
+    ui->lblResult->setText("Resultado del backend (C): " + QString::number(resultado));
 }
