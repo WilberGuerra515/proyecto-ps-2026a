@@ -26,6 +26,12 @@
      </widget>
     </item>
     <item>
+     <widget class="QSpinBox" name="spinNum1"/>
+    </item>
+    <item>
+     <widget class="QSpinBox" name="spinNum2"/>
+    </item>
+    <item>
      <widget class="QPushButton" name="btnProcess">
       <property name="text">
        <string>Procesar Datos en C</string>

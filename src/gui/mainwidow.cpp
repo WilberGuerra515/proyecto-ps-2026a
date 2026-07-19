@@ -22,6 +22,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_btnProcess_clicked()
 {
-    int resultado = process_data(100, 50);
+    int num1 = ui->spinNum1->value();
+    int num2 = ui->spinNum2->value();
+    
+    int resultado = process_data(num1, num2);
+    
+    qDebug() << "Backend ejecutado dinámicamente:" << num1 << "+" << num2 << "=" << resultado;
+    
     ui->lblResult->setText("Resultado del backend (C): " + QString::number(resultado));
 }
