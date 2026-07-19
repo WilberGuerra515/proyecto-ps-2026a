@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>350</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,6 +27,25 @@
     </item>
     <item>
      <widget class="QSpinBox" name="spinNum1"/>
+    </item>
+    <item>
+     <widget class="QComboBox" name="comboOp">
+      <item>
+       <property name="text">
+        <string>Sumar (+)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Restar (-)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Multiplicar (*)</string>
+       </property>
+      </item>
+     </widget>
     </item>
     <item>
      <widget class="QSpinBox" name="spinNum2"/>

@@ -10,9 +10,6 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    qDebug() << "Conexión exitosa. Mensaje:" << get_backend_message();
-    qDebug() << "Prueba de procesamiento (15 + 25):" << process_data(15, 25);
 }
 
 MainWindow::~MainWindow()
@@ -25,9 +22,11 @@ void MainWindow::on_btnProcess_clicked()
     int num1 = ui->spinNum1->value();
     int num2 = ui->spinNum2->value();
     
-    int resultado = process_data(num1, num2);
+    int operacionSeleccionada = ui->comboOp->currentIndex();
     
-    qDebug() << "Backend ejecutado dinámicamente:" << num1 << "+" << num2 << "=" << resultado;
+    int resultado = process_data(num1, num2, operacionSeleccionada);
     
     ui->lblResult->setText("Resultado del backend (C): " + QString::number(resultado));
+    
+    qDebug() << "Operación enviada al Backend (C):" << operacionSeleccionada << "| Resultado:" << resultado;
 }
