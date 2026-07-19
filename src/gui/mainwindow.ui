@@ -6,55 +6,43 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>350</height>
+    <width>900</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>AppControl</string>
+   <string>Linux System Controller - C/Qt Admin</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item>
-     <widget class="QLabel" name="lblResult">
-      <property name="text">
-       <string>Esperando acción...</string>
+     <widget class="QTabWidget" name="mainTabWidget">
+      <property name="currentIndex">
+       <number>0</number>
       </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QSpinBox" name="spinNum1"/>
-    </item>
-    <item>
-     <widget class="QComboBox" name="comboOp">
-      <item>
-       <property name="text">
-        <string>Sumar (+)</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Restar (-)</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Multiplicar (*)</string>
-       </property>
-      </item>
-     </widget>
-    </item>
-    <item>
-     <widget class="QSpinBox" name="spinNum2"/>
-    </item>
-    <item>
-     <widget class="QPushButton" name="btnProcess">
-      <property name="text">
-       <string>Procesar Datos en C</string>
-      </property>
+      
+      <!-- Pestañas restantes en blanco (Placeholders) -->
+      <widget class="QWidget" name="tabTasks"><attribute name="title"><string>Comandos (Módulo 1)</string></attribute></widget>
+      <widget class="QWidget" name="tabFiles"><attribute name="title"><string>Comandos (Módulo 2)</string></attribute></widget>
+      <widget class="QWidget" name="tabCommands"><attribute name="title"><string>Comandos (Módulo 3)</string></attribute></widget>
+      <widget class="QWidget" name="tabBackups"><attribute name="title"><string>Respaldos (Módulo 4)</string></attribute></widget>
+      <widget class="QWidget" name="tabBash"><attribute name="title"><string>Bash Script (Módulo 5)</string></attribute></widget>
+      <widget class="QWidget" name="tabDownloads"><attribute name="title"><string>Descargas (Módulo 6)</string></attribute></widget>
      </widget>
     </item>
    </layout>
