@@ -1,20 +1,25 @@
 #ifndef BACKEND_H
 #define BACKEND_H
 
-typedef enum {
-    OP_SUMAR = 0,
-    OP_RESTAR,
-    OP_MULTIPLICAR
-} TipoOperacion;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int process_data(int a, int b, int operacion);
+// Estructura genérica para manejo de errores estructurados
+typedef struct {
+    int code;
+    char message[256];
+} CError;
+
+// CONTRATO DE MEMORIA: Libera cualquier puntero alojado con malloc/calloc en C
+void free_c_pointer(void* ptr);
+
+// Prototipos base de prueba o inicialización del sistema
+int init_core_system(CError* error);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif // BACKEND_H
+

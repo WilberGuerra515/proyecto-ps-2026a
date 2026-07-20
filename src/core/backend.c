@@ -1,19 +1,18 @@
-#include "backend.h"
+#include "core/backend.h"
+#include <stdlib.h>
+#include <string.h>
 
-const char* get_backend_message(void) 
-{
-    return "Sistema backend en C inicializado correctamente.";
+void free_c_pointer(void* ptr) {
+    if (ptr != NULL) {
+        free(ptr);
+    }
 }
 
-int process_data(int a, int b, int operacion) {
-    switch (operacion) {
-        case OP_SUMAR:
-            return a + b;
-        case OP_RESTAR:
-            return a - b;
-        case OP_MULTIPLICAR:
-            return a * b;
-        default:
-            return 0; 
-    }
+int init_core_system(CError* error) {
+    if (error == NULL) return -1;
+    
+    // Inicialización limpia simulada
+    error->code = 0;
+    strcpy(error->message, "Core C inicializado correctamente.");
+    return 0;
 }
