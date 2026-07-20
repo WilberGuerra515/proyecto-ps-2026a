@@ -68,3 +68,46 @@ FileInfo* get_directory_contents(const char* dir_path, int* count, CError* error
     error->code = 0;
     return list;
 }
+
+// Helper interno recursivo para la búsqueda
+static void search_recursive_internal(const char* current_path, const char* term, char*** results, int* count, int* capacity) {
+    DIR* dir = opendir(current_path);
+    if (!dir) return;
+
+    struct dirent* entry;
+    while ((entry = readdir(dir)) != NULL) {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) continue;
+
+        char full_path[512];
+        snprintf(full_path, sizeof(full_path), "%s/%s", current_path, entry->d_name);
+
+        // Si coincide con el término de búsqueda, guardamos la ruta
+        if (strstr(entry->d_name, term) != NULL) {
+            if (*count >= *capacity) {
+                *capacity *= 2;
+                *results = realloc(*results, (*capacity) * sizeof(char*));
+            }
+            (*results)[*count] = strdup(full_path); // Puntero dinámico alojado en C
+            (*count)++;
+        }
+
+        // Si es un directorio, profundizar de forma recursiva
+        if (entry->d_type == DT_DIR) {
+            search_recursive_internal(full_path, term, results, count, capacity);
+        }
+    }
+    closedir(dir);
+}
+
+char** search_files_recursive(const char* base_path, const char* search_term, int* count, CError* error) {
+    int capacity = 32;
+    *count = 0;
+    char** results = malloc(capacity * sizeof(char*));
+
+    search_recursive_internal(base_path, search_term, &results, count, &capacity);
+
+    error->code = 0;
+    return results;
+}
+
+
