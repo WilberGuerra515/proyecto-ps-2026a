@@ -22,11 +22,17 @@ private slots:
     void refreshProcesses();
     void handleProcessSignal();
 
+    // Slots Módulo 2
+    void browseToPath(const QString &path);
+    void onFileItemDoubleClicked(QTreeWidgetItem *item, int column);
+    void startAsyncSearch();
+    void handleSearchFinished(const QStringList &results, int errorCode, const QString &errorMsg);
+
 private:
     Ui::MainWindow *ui;
     
     QString currentExploredPath;
-    void setupComponentsView(); 
+    void setupComponentsView(); // Configuración inicial de cabeceras visuales
 };
 
 #endif // MAINWINDOW_H
