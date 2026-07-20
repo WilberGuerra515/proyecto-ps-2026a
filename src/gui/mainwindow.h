@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
+#include <QTreeWidgetItem>
+#include "backend.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -17,10 +18,16 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_btnProcess_clicked();
+    // Slots Módulo 1
+    void refreshProcesses();
+    void handleProcessSignal();
 
 private:
     Ui::MainWindow *ui;
+    
+    QString currentExploredPath;
+    void setupComponentsView(); 
 };
 
 #endif // MAINWINDOW_H
+
