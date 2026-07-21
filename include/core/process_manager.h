@@ -1,6 +1,8 @@
 #ifndef PROCESS_MANAGER_H
 #define PROCESS_MANAGER_H
 
+#include "backend.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
