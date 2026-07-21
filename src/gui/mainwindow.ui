@@ -1,4 +1,93 @@
-<!-- MÓDULO 2: ARCHIVOS -->
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>900</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Linux System Controller - C/Qt Admin</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QTabWidget" name="mainTabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      
+      <!-- MÓDULO 1: TAREAS -->
+      <widget class="QWidget" name="tabTasks">
+       <attribute name="title">
+        <string>Tareas (Módulo 1)</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="layoutTasks">
+        <item>
+         <widget class="QTreeWidget" name="processTreeWidget"/>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="layoutTasksButtons">
+          <item>
+           <widget class="QPushButton" name="btnRefresh">
+            <property name="text">
+             <string>Actualizar Lista</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="spacerTasks">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnStop">
+            <property name="text">
+             <string>Suspender (SIGSTOP)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnCont">
+            <property name="text">
+             <string>Reanudar (SIGCONT)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnKill">
+            <property name="text">
+             <string>Terminar (SIGKILL)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+
+      <!-- MÓDULO 2: ARCHIVOS -->
       <widget class="QWidget" name="tabFiles">
        <attribute name="title">
         <string>Archivos (Módulo 2)</string>
@@ -68,3 +157,17 @@
         </item>
        </layout>
       </widget>
+
+      <!-- Pestañas restantes en blanco (Placeholders) -->
+      <widget class="QWidget" name="tabCommands"><attribute name="title"><string>Comandos (Módulo 3)</string></attribute></widget>
+      <widget class="QWidget" name="tabBackups"><attribute name="title"><string>Respaldos (Módulo 4)</string></attribute></widget>
+      <widget class="QWidget" name="tabBash"><attribute name="title"><string>Bash Script (Módulo 5)</string></attribute></widget>
+      <widget class="QWidget" name="tabDownloads"><attribute name="title"><string>Descargas (Módulo 6)</string></attribute></widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
