@@ -413,8 +413,76 @@
        </layout>
       </widget>
 
-    <!-- Pestaña restante en blanco (Placeholders) -->
-      <widget class="QWidget" name="tabDownloads"><attribute name="title"><string>Descargas (Módulo 6)</string></attribute></widget>
+      <!-- MÓDULO 6: GESTOR DE DESCARGAS -->
+      <widget class="QWidget" name="tabDownloads">
+       <attribute name="title">
+        <string>Descargas (Módulo 6)</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="layoutDownloads">
+        <property name="spacing">
+         <number>12</number>
+        </property>
+        <item>
+         <layout class="QFormLayout" name="formLayoutDownloads">
+          <item row="0" column="0">
+           <widget class="QLabel" name="lblUrl">
+            <property name="text">
+             <string>URL del Archivo:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="txtDownloadUrl">
+            <property name="placeholderText">
+             <string>https://speed.hetzner.de/100MB.bin o cualquier enlace...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lblDownloadDest">
+            <property name="text">
+             <string>Carpeta Destino:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="txtDownloadDir">
+            <property name="text">
+             <string>/home/Dieguito</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnStartDownload">
+          <property name="text">
+           <string>Iniciar Descarga Nativa</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QProgressBar" name="downloadProgressBar">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTextEdit" name="txtDownloadLog">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="placeholderText">
+           <string>Registro de descargas activas...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
