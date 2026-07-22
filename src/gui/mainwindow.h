@@ -5,6 +5,7 @@
 #include <QTreeWidgetItem>
 #include "backend.h"
 #include <QSocketNotifier>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -37,6 +38,7 @@ private slots:
     // Slots Módulo 4
     void startBackupGeneration();
     void handleBackupFinished(bool success, const QString &message);
+    void refreshSystemMetrics();
 
 private:
     Ui::MainWindow *ui;
@@ -47,6 +49,7 @@ private:
     int commandPid = -1;
     QSocketNotifier *commandNotifier = nullptr;
     void cleanupActiveCommand();
+    QTimer *monitorTimer = nullptr;
 };
 
 #endif // MAINWINDOW_H
