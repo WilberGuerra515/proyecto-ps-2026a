@@ -13,6 +13,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <QDateTime>
+#include "system_monitor.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -66,7 +67,13 @@ void MainWindow::setupComponentsView()
 
     // --- Configuración Módulo 4 (Respaldos) ---
     connect(ui->btnCreateBackup, &QPushButton::clicked, this, &MainWindow::startBackupGeneration);
-    
+
+    // --- Configuración Módulo 5 (Monitor) ---
+    monitorTimer = new QTimer(this);
+    connect(monitorTimer, &QTimer::timeout, this, &MainWindow::refreshSystemMetrics);
+    monitorTimer->start(1000);
+    refreshSystemMetrics();
+
     // Cargas iniciales
     refreshProcesses();
     browseToPath("/");
@@ -354,4 +361,41 @@ void MainWindow::handleBackupFinished(bool success, const QString &message)
 
     ui->backupProgressBar->setVisible(false);
     ui->btnCreateBackup->setEnabled(true);
+}
+
+// =============================================================================
+// LÓGICA MÓDULO 5
+// =============================================================================
+void MainWindow::refreshSystemMetrics()
+{
+    SystemMetrics metrics;
+    CError error;
+
+    if (collect_system_metrics(&metrics, &error) == 0) {
+        // 1. Actualizar RAM
+        long usedRam = metrics.total_ram_mb - metrics.avail_ram_mb;
+        ui->barRAM->setMaximum(metrics.total_ram_mb);
+        ui->barRAM->setValue(usedRam);
+        
+        ui->lblRAMDetails->setText(QString("Memoria Libre Real: %1 MB  |  Disponible para Apps: %2 MB")
+                                   .arg(metrics.free_ram_mb)
+                                   .arg(metrics.avail_ram_mb));
+
+        // 2. Actualizar Carga de Sistema
+        ui->valLoad1->setText(QString::number(metrics.load_1min, 'f', 2));
+        ui->valLoad5->setText(QString::number(metrics.load_5min, 'f', 2));
+
+        // 3. Formatear y Actualizar Uptime (Segundos a HH:MM:SS)
+        long secs = metrics.uptime_seconds;
+        long hours = secs / 3600;
+        long mins = (secs % 3600) / 60;
+        long remainingSecs = secs % 60;
+
+        ui->valUptime->setText(QString("%1h %2m %3s")
+                               .arg(hours, 2, 10, QChar('0'))
+                               .arg(mins, 2, 10, QChar('0'))
+                               .arg(remainingSecs, 2, 10, QChar('0')));
+    } else {
+        ui->lblRAMDetails->setText(QString("[Error de Telemetría]: %1").arg(QString::fromUtf8(error.message)));
+    }
 }
