@@ -4,12 +4,15 @@
 #include "file_shell.h"
 #include "filesearchworker.h"
 #include "command_console.h"
+#include "backup_manager.h"
+#include "backupworker.h"
 
 #include <QMessageBox>
 #include <QThread>
 #include <signal.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <QDateTime>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -60,6 +63,9 @@ void MainWindow::setupComponentsView()
     connect(ui->txtCommandInput, &QLineEdit::returnPressed, this, &MainWindow::startCommandExecution);
     connect(ui->btnTerminateCommand, &QPushButton::clicked, this, &MainWindow::terminateActiveCommand);
     ui->btnTerminateCommand->setEnabled(false);
+
+    // --- Configuración Módulo 4 (Respaldos) ---
+    connect(ui->btnCreateBackup, &QPushButton::clicked, this, &MainWindow::startBackupGeneration);
     
     // Cargas iniciales
     refreshProcesses();
@@ -298,4 +304,54 @@ void MainWindow::cleanupActiveCommand()
 
     ui->btnTerminateCommand->setEnabled(false);
     ui->btnSendCommand->setEnabled(true);
+}
+
+// =============================================================================
+// LÓGICA MÓDULO 4: GESTOR DE RESPALDOS
+// =============================================================================
+void MainWindow::startBackupGeneration()
+{
+    QString src = ui->txtSrcDir->text().trimmed();
+    QString dest = ui->txtDestDir->text().trimmed();
+    QString name = ui->txtBackupName->text().trimmed();
+
+    if (src.isEmpty() || dest.isEmpty() || name.isEmpty()) {
+        QMessageBox::warning(this, "Validación", "Por favor completa todos los campos del formulario.");
+        return;
+    }
+
+    ui->btnCreateBackup->setEnabled(false);
+    ui->backupProgressBar->setVisible(true);
+    ui->backupProgressBar->setRange(0, 0); 
+    
+    QString timestamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    ui->txtBackupLog->append(QString("[%1] Iniciando compresión de: %2 ...").arg(timestamp, src));
+
+    QThread *backupThread = new QThread(this);
+    BackupWorker *worker = new BackupWorker(src, dest, name);
+    worker->moveToThread(backupThread);
+
+    connect(backupThread, &QThread::started, worker, &BackupWorker::processBackup);
+    connect(worker, &BackupWorker::backupFinished, this, &MainWindow::handleBackupFinished);
+    connect(worker, &BackupWorker::backupFinished, backupThread, &QThread::quit);
+    connect(worker, &BackupWorker::backupFinished, worker, &QObject::deleteLater);
+    connect(backupThread, &QThread::finished, backupThread, &QObject::deleteLater);
+
+    backupThread->start();
+}
+
+void MainWindow::handleBackupFinished(bool success, const QString &message)
+{
+    QString timestamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    
+    if (success) {
+        ui->txtBackupLog->append(QString("[%1] [ÉXITO]: %2").arg(timestamp, message));
+        QMessageBox::information(this, "Respaldos", "¡Copia de seguridad generada con éxito!");
+    } else {
+        ui->txtBackupLog->append(QString("[%1] [ERROR]: %2").arg(timestamp, message));
+        QMessageBox::critical(this, "Respaldos", QString("Fallo al crear el respaldo:\n%1").arg(message));
+    }
+
+    ui->backupProgressBar->setVisible(false);
+    ui->btnCreateBackup->setEnabled(true);
 }

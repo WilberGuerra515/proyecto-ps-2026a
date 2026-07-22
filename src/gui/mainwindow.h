@@ -34,6 +34,10 @@ private slots:
     void readCommandLiveOutput();
     void terminateActiveCommand();
 
+    // Slots Módulo 4
+    void startBackupGeneration();
+    void handleBackupFinished(bool success, const QString &message);
+
 private:
     Ui::MainWindow *ui;
     
