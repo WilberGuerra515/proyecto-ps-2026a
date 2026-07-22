@@ -223,7 +223,7 @@
           <item row="0" column="1">
            <widget class="QLineEdit" name="txtSrcDir">
             <property name="text">
-             <string>/home/Dieguito/pruebaQT</string>
+             <string>/home/user/pruebaQT</string>
             </property>
            </widget>
           </item>
@@ -237,7 +237,7 @@
           <item row="1" column="1">
            <widget class="QLineEdit" name="txtDestDir">
             <property name="text">
-             <string>/home/Dieguito</string>
+             <string>/home/user</string>
             </property>
            </widget>
           </item>
@@ -448,7 +448,7 @@
           <item row="1" column="1">
            <widget class="QLineEdit" name="txtDownloadDir">
             <property name="text">
-             <string>/home/Dieguito</string>
+             <string>/home/user</string>
             </property>
            </widget>
           </item>

@@ -257,7 +257,7 @@ void MainWindow::startCommandExecution()
             ui->txtConsoleOutput->insertPlainText("\n");
         }
         
-        ui->txtConsoleOutput->insertPlainText(QString("[/home/Dieguito]$ %1\n").arg(cmd));
+        ui->txtConsoleOutput->insertPlainText(QString("[/home/user]$ %1\n").arg(cmd));
         ui->txtConsoleOutput->moveCursor(QTextCursor::End);
 
         ui->txtCommandInput->clear();
