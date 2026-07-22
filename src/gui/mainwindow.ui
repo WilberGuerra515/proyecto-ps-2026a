@@ -158,8 +158,51 @@
        </layout>
       </widget>
 
+      <!-- MÓDULO 3: CONSOLA DE COMANDOS -->
+      <widget class="QWidget" name="tabCommands">
+       <attribute name="title">
+        <string>Comandos (Módulo 3)</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="layoutCommands">
+        <item>
+         <widget class="QPlainTextEdit" name="txtConsoleOutput">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #000000; color: #00FF00; font-family: 'Monospace', 'Courier New';</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="layoutCommandInput">
+          <item>
+           <widget class="QLineEdit" name="txtCommandInput">
+            <property name="placeholderText">
+             <string>Escribe un comando (ej: ping -c 4 google.com, ls -la)...</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnSendCommand">
+            <property name="text">
+             <string>Ejecutar</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnTerminateCommand">
+            <property name="text">
+             <string>Detener</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      
       <!-- Pestañas restantes en blanco (Placeholders) -->
-      <widget class="QWidget" name="tabCommands"><attribute name="title"><string>Comandos (Módulo 3)</string></attribute></widget>
       <widget class="QWidget" name="tabBackups"><attribute name="title"><string>Respaldos (Módulo 4)</string></attribute></widget>
       <widget class="QWidget" name="tabBash"><attribute name="title"><string>Bash Script (Módulo 5)</string></attribute></widget>
       <widget class="QWidget" name="tabDownloads"><attribute name="title"><string>Descargas (Módulo 6)</string></attribute></widget>

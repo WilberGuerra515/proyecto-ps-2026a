@@ -3,9 +3,13 @@
 #include "process_manager.h"
 #include "file_shell.h"
 #include "filesearchworker.h"
+#include "command_console.h"
+
 #include <QMessageBox>
 #include <QThread>
 #include <signal.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -51,6 +55,12 @@ void MainWindow::setupComponentsView()
     connect(ui->fileTreeWidget, &QTreeWidget::itemDoubleClicked, this, &MainWindow::onFileItemDoubleClicked);
     connect(ui->btnSearchFile, &QPushButton::clicked, this, &MainWindow::startAsyncSearch);
 
+    // --- Configuración Módulo 3 (Consola) ---
+    connect(ui->btnSendCommand, &QPushButton::clicked, this, &MainWindow::startCommandExecution);
+    connect(ui->txtCommandInput, &QLineEdit::returnPressed, this, &MainWindow::startCommandExecution);
+    connect(ui->btnTerminateCommand, &QPushButton::clicked, this, &MainWindow::terminateActiveCommand);
+    ui->btnTerminateCommand->setEnabled(false);
+    
     // Cargas iniciales
     refreshProcesses();
     browseToPath("/");
@@ -190,3 +200,88 @@ void MainWindow::handleSearchFinished(const QStringList &results, int errorCode,
     ui->btnSearchFile->setEnabled(true);
 }
 
+
+// =============================================================================
+// LÓGICA MÓDULO 3
+// =============================================================================
+
+void MainWindow::startCommandExecution()
+{
+    QString cmd = ui->txtCommandInput->text().trimmed();
+    if (cmd.isEmpty()) return;
+
+    if (commandFd != -1) {
+        terminateActiveCommand();
+    }
+
+    CError error;
+    QString targetDirectory = "/home/Dieguito";
+
+    if (execute_command_async(cmd.toUtf8().constData(), 
+                              targetDirectory.toUtf8().constData(), 
+                              &commandFd, &commandPid, &error) == 0) 
+    {
+        ui->txtConsoleOutput->appendPlainText(QString("[/home/Dieguito]$ %1").arg(cmd));
+        ui->txtCommandInput->clear();
+        ui->btnTerminateCommand->setEnabled(true);
+        ui->btnSendCommand->setEnabled(false);
+
+        commandNotifier = new QSocketNotifier(commandFd, QSocketNotifier::Read, this);
+        connect(commandNotifier, &QSocketNotifier::activated, this, &MainWindow::readCommandLiveOutput);
+    } else {
+        ui->txtConsoleOutput->appendPlainText(QString("[ERROR]: %1").arg(QString::fromUtf8(error.message)));
+    }
+}
+
+void MainWindow::readCommandLiveOutput()
+{
+    char buffer[512];
+    CError error;
+    int bytesRead = read_command_output(commandFd, buffer, sizeof(buffer), &error);
+
+    if (bytesRead > 0) {
+        ui->txtConsoleOutput->moveCursor(QTextCursor::End);
+        ui->txtConsoleOutput->insertPlainText(QString::fromUtf8(buffer));
+        ui->txtConsoleOutput->moveCursor(QTextCursor::End);
+    } 
+    else if (bytesRead == 0 || bytesRead == -1) {
+        terminateActiveCommand();
+        if (bytesRead == -1) {
+            ui->txtConsoleOutput->appendPlainText(QString("\n[Proceso abortado: %1]\n").arg(QString::fromUtf8(error.message)));
+        } else {
+            ui->txtConsoleOutput->appendPlainText("\n[Proceso terminado exitosamente]\n");
+        }
+    }
+}
+
+void MainWindow::terminateActiveCommand()
+{
+    bool wasRunning = (commandPid != -1);
+
+    if (commandNotifier) {
+        commandNotifier->setEnabled(false);
+        delete commandNotifier;
+        commandNotifier = nullptr;
+    }
+
+    if (commandFd != -1) {
+        ::close(commandFd);
+        commandFd = -1;
+    }
+
+    if (commandPid != -1) {
+        CError error;
+        send_signal_to_process(commandPid, SIGKILL, &error);
+        ::waitpid(commandPid, nullptr, WNOHANG); 
+        commandPid = -1;
+    }
+
+    if (wasRunning) {
+        ui->txtConsoleOutput->moveCursor(QTextCursor::End);
+        ui->txtConsoleOutput->appendPlainText("\n[Proceso terminado por el usuario (SIGKILL)]\n");
+        ui->txtConsoleOutput->moveCursor(QTextCursor::End);
+    }
+
+    ui->btnTerminateCommand->setEnabled(false);
+    ui->btnSendCommand->setEnabled(true);
+}
