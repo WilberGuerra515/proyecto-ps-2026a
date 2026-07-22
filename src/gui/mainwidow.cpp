@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include <QDateTime>
 #include "system_monitor.h"
+#include "download_manager.h"
+#include "downloadworker.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -73,6 +75,9 @@ void MainWindow::setupComponentsView()
     connect(monitorTimer, &QTimer::timeout, this, &MainWindow::refreshSystemMetrics);
     monitorTimer->start(1000);
     refreshSystemMetrics();
+
+    // --- Configuración Módulo 6 (Descargas) ---
+    connect(ui->btnStartDownload, &QPushButton::clicked, this, &MainWindow::startFileDownload);
 
     // Cargas iniciales
     refreshProcesses();
@@ -398,4 +403,54 @@ void MainWindow::refreshSystemMetrics()
     } else {
         ui->lblRAMDetails->setText(QString("[Error de Telemetría]: %1").arg(QString::fromUtf8(error.message)));
     }
+}
+
+// =============================================================================
+// LÓGICA MÓDULO 6: GESTOR DE DESCARGAS ASÍNCRONO
+// =============================================================================
+void MainWindow::startFileDownload()
+{
+    QString url = ui->txtDownloadUrl->text().trimmed();
+    QString dest = ui->txtDownloadDir->text().trimmed();
+
+    if (url.isEmpty() || dest.isEmpty()) {
+        QMessageBox::warning(this, "Validación", "Por favor introduce una URL válida y una ruta de destino.");
+        return;
+    }
+
+    ui->btnStartDownload->setEnabled(false);
+    ui->downloadProgressBar->setVisible(true);
+    ui->downloadProgressBar->setRange(0, 0); // Barra animada infinita
+
+    QString timestamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    ui->txtDownloadLog->append(QString("[%1] Conectando a la URL: %2 ...").arg(timestamp, url));
+
+    // Despliegue del hilo secundario de descarga
+    QThread *downloadThread = new QThread(this);
+    DownloadWorker *worker = new DownloadWorker(url, dest);
+    worker->moveToThread(downloadThread);
+
+    connect(downloadThread, &QThread::started, worker, &DownloadWorker::processDownload);
+    connect(worker, &DownloadWorker::downloadFinished, this, &MainWindow::handleDownloadFinished);
+    connect(worker, &DownloadWorker::downloadFinished, downloadThread, &QThread::quit);
+    connect(worker, &DownloadWorker::downloadFinished, worker, &QObject::deleteLater);
+    connect(downloadThread, &QThread::finished, downloadThread, &QObject::deleteLater);
+
+    downloadThread->start();
+}
+
+void MainWindow::handleDownloadFinished(bool success, const QString &message)
+{
+    QString timestamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+
+    if (success) {
+        ui->txtDownloadLog->append(QString("[%1] [ÉXITO]: %2").arg(timestamp, message));
+        QMessageBox::information(this, "Descargas", "¡El archivo se ha descargado con éxito!");
+    } else {
+        ui->txtDownloadLog->append(QString("[%1] [ERROR]: %2").arg(timestamp, message));
+        QMessageBox::critical(this, "Descargas", QString("Fallo en la descarga:\n%1").arg(message));
+    }
+
+    ui->downloadProgressBar->setVisible(false);
+    ui->btnStartDownload->setEnabled(true);
 }

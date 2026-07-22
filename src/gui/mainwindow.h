@@ -38,7 +38,13 @@ private slots:
     // Slots Módulo 4
     void startBackupGeneration();
     void handleBackupFinished(bool success, const QString &message);
+    
+    // Slots Módulo 5
     void refreshSystemMetrics();
+
+    // Slots Módulo 6
+    void startFileDownload();
+    void handleDownloadFinished(bool success, const QString &message);
 
 private:
     Ui::MainWindow *ui;
