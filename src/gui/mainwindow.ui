@@ -201,9 +201,208 @@
         </item>
        </layout>
       </widget>
-      
+
+      <!-- MÓDULO 4: GESTOR DE RESPALDOS -->
+      <widget class="QWidget" name="tabBackups">
+       <attribute name="title">
+        <string>Respaldos (Módulo 4)</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="layoutBackups">
+        <item>
+         <layout class="QFormLayout" name="formLayoutBackups">
+          <property name="verticalSpacing">
+           <number>12</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="lblSrcDir">
+            <property name="text">
+             <string>Directorio Origen a respaldar:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="txtSrcDir">
+            <property name="text">
+             <string>/home/Dieguito/pruebaQT</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lblDestDir">
+            <property name="text">
+             <string>Directorio Destino (Donde se guardará):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="txtDestDir">
+            <property name="text">
+             <string>/home/Dieguito</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="lblBackupName">
+            <property name="text">
+             <string>Nombre del Archivo Final (.tar.gz):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="txtBackupName">
+            <property name="placeholderText">
+             <string>respaldo_proyecto_final</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="spacerBackups">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnCreateBackup">
+          <property name="text">
+           <string>Generar Respaldo Tarball (.tar.gz)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QProgressBar" name="backupProgressBar">
+          <property name="value">
+           <number>0</number>
+          </property>
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTextEdit" name="txtBackupLog">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="placeholderText">
+           <string>Historial de operaciones de respaldo...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget><!-- MÓDULO 4: GESTOR DE RESPALDOS -->
+      <widget class="QWidget" name="tabBackups">
+       <attribute name="title">
+        <string>Respaldos (Módulo 4)</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="layoutBackups">
+        <item>
+         <layout class="QFormLayout" name="formLayoutBackups">
+          <property name="verticalSpacing">
+           <number>12</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="lblSrcDir">
+            <property name="text">
+             <string>Directorio Origen a respaldar:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="txtSrcDir">
+            <property name="text">
+             <string>/home/Dieguito/pruebaQT</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lblDestDir">
+            <property name="text">
+             <string>Directorio Destino (Donde se guardará):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="txtDestDir">
+            <property name="text">
+             <string>/home/Dieguito</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="lblBackupName">
+            <property name="text">
+             <string>Nombre del Archivo Final (.tar.gz):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="txtBackupName">
+            <property name="placeholderText">
+             <string>respaldo_proyecto_final</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="spacerBackups">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnCreateBackup">
+          <property name="text">
+           <string>Generar Respaldo Tarball (.tar.gz)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QProgressBar" name="backupProgressBar">
+          <property name="value">
+           <number>0</number>
+          </property>
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTextEdit" name="txtBackupLog">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="placeholderText">
+           <string>Historial de operaciones de respaldo...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+
       <!-- Pestañas restantes en blanco (Placeholders) -->
-      <widget class="QWidget" name="tabBackups"><attribute name="title"><string>Respaldos (Módulo 4)</string></attribute></widget>
       <widget class="QWidget" name="tabBash"><attribute name="title"><string>Bash Script (Módulo 5)</string></attribute></widget>
       <widget class="QWidget" name="tabDownloads"><attribute name="title"><string>Descargas (Módulo 6)</string></attribute></widget>
      </widget>
