@@ -17,6 +17,9 @@
 #include "download_manager.h"
 #include "downloadworker.h"
 
+#include <QStandardPaths>
+#include <QDir>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -28,6 +31,16 @@ MainWindow::MainWindow(QWidget *parent)
         QMessageBox::critical(this, "Error de Core", QString::fromUtf8(error.message));
         exit(1);
     }
+
+    // 1. Obtenemos el directorio del usuario actual
+    QString home = QDir::homePath();
+
+    // 2. Actualizamos el Módulo 4: Respaldos
+    ui->txtSrcDir->setText(QDir(home).filePath("pruebaQT")); 
+    ui->txtDestDir->setText(home);
+
+    // 3. Actualizamos el Módulo 6: Descargas
+    ui->txtDownloadDir->setText(home);
 
     // Preparar las propiedades visuales y las conexiones
     setupComponentsView();
@@ -233,7 +246,7 @@ void MainWindow::startCommandExecution()
     }
 
     CError error;
-    QString targetDirectory = "/home/Dieguito";
+    QString targetDirectory = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 
     if (execute_command_async(cmd.toUtf8().constData(), 
                               targetDirectory.toUtf8().constData(), 
