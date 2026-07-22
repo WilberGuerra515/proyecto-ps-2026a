@@ -42,6 +42,7 @@ private:
     int commandFd = -1;
     int commandPid = -1;
     QSocketNotifier *commandNotifier = nullptr;
+    void cleanupActiveCommand();
 };
 
 #endif // MAINWINDOW_H

@@ -211,7 +211,7 @@ void MainWindow::startCommandExecution()
     if (cmd.isEmpty()) return;
 
     if (commandFd != -1) {
-        terminateActiveCommand();
+        cleanupActiveCommand();
     }
 
     CError error;
@@ -221,7 +221,14 @@ void MainWindow::startCommandExecution()
                               targetDirectory.toUtf8().constData(), 
                               &commandFd, &commandPid, &error) == 0) 
     {
-        ui->txtConsoleOutput->appendPlainText(QString("[/home/Dieguito]$ %1").arg(cmd));
+        ui->txtConsoleOutput->moveCursor(QTextCursor::End);
+        if (!ui->txtConsoleOutput->toPlainText().isEmpty()) {
+            ui->txtConsoleOutput->insertPlainText("\n");
+        }
+        
+        ui->txtConsoleOutput->insertPlainText(QString("[/home/Dieguito]$ %1\n").arg(cmd));
+        ui->txtConsoleOutput->moveCursor(QTextCursor::End);
+
         ui->txtCommandInput->clear();
         ui->btnTerminateCommand->setEnabled(true);
         ui->btnSendCommand->setEnabled(false);
@@ -229,7 +236,9 @@ void MainWindow::startCommandExecution()
         commandNotifier = new QSocketNotifier(commandFd, QSocketNotifier::Read, this);
         connect(commandNotifier, &QSocketNotifier::activated, this, &MainWindow::readCommandLiveOutput);
     } else {
-        ui->txtConsoleOutput->appendPlainText(QString("[ERROR]: %1").arg(QString::fromUtf8(error.message)));
+        ui->txtConsoleOutput->moveCursor(QTextCursor::End);
+        ui->txtConsoleOutput->insertPlainText(QString("\n[ERROR]: %1\n").arg(QString::fromUtf8(error.message)));
+        ui->txtConsoleOutput->moveCursor(QTextCursor::End);
     }
 }
 
@@ -245,19 +254,30 @@ void MainWindow::readCommandLiveOutput()
         ui->txtConsoleOutput->moveCursor(QTextCursor::End);
     } 
     else if (bytesRead == 0 || bytesRead == -1) {
-        terminateActiveCommand();
+        ui->txtConsoleOutput->moveCursor(QTextCursor::End);
         if (bytesRead == -1) {
-            ui->txtConsoleOutput->appendPlainText(QString("\n[Proceso abortado: %1]\n").arg(QString::fromUtf8(error.message)));
+            ui->txtConsoleOutput->insertPlainText(QString("\n[Proceso abortado: %1]\n").arg(QString::fromUtf8(error.message)));
         } else {
-            ui->txtConsoleOutput->appendPlainText("\n[Proceso terminado exitosamente]\n");
+            ui->txtConsoleOutput->insertPlainText("\n[Proceso terminado exitosamente]\n");
         }
+        ui->txtConsoleOutput->moveCursor(QTextCursor::End);
+        
+        cleanupActiveCommand();
     }
 }
 
 void MainWindow::terminateActiveCommand()
 {
-    bool wasRunning = (commandPid != -1);
+    if (commandPid != -1) {
+        ui->txtConsoleOutput->moveCursor(QTextCursor::End);
+        ui->txtConsoleOutput->insertPlainText("\n[Proceso terminado por el usuario (SIGKILL)]\n");
+        ui->txtConsoleOutput->moveCursor(QTextCursor::End);
+    }
+    cleanupActiveCommand();
+}
 
+void MainWindow::cleanupActiveCommand()
+{
     if (commandNotifier) {
         commandNotifier->setEnabled(false);
         delete commandNotifier;
@@ -274,12 +294,6 @@ void MainWindow::terminateActiveCommand()
         send_signal_to_process(commandPid, SIGKILL, &error);
         ::waitpid(commandPid, nullptr, WNOHANG); 
         commandPid = -1;
-    }
-
-    if (wasRunning) {
-        ui->txtConsoleOutput->moveCursor(QTextCursor::End);
-        ui->txtConsoleOutput->appendPlainText("\n[Proceso terminado por el usuario (SIGKILL)]\n");
-        ui->txtConsoleOutput->moveCursor(QTextCursor::End);
     }
 
     ui->btnTerminateCommand->setEnabled(false);
